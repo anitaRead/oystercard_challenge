@@ -20,10 +20,12 @@ describe Oystercard do
     end
 
     it 'can touch in the oystercard' do
+      subject.top_up(2)
       expect(subject.touch_in).to eq true
     end
 
     it 'shows user is in journey' do
+      subject.top_up(2)
       subject.touch_in
       expect(subject.in_journey?).to eq true
     end
@@ -33,9 +35,14 @@ describe Oystercard do
     end
 
     it 'keeps track of when the user is in journey' do
+      subject.top_up(2)
       subject.touch_in
       expect(subject.in_journey?).to eq true
       subject.touch_out
       expect(subject.in_journey?).to eq false
     end
+
+    it 'raises error if user tries to touch in with less than minimum amount' do
+      expect { subject.touch_in }.to raise_error "unable to touch-in: minimum balance is £1"
+    end  
 end
