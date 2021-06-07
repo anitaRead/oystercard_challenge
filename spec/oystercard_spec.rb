@@ -16,7 +16,8 @@ describe Oystercard do
 
     it 'deducts money from the balance' do
       subject.top_up(50)
-      expect(subject.deduct(1.50)).to eq 48.50
+      subject.touch_out
+      expect(subject.balance).to eq 49
     end
 
     it 'can touch in the oystercard' do
@@ -44,5 +45,10 @@ describe Oystercard do
 
     it 'raises error if user tries to touch in with less than minimum amount' do
       expect { subject.touch_in }.to raise_error "unable to touch-in: minimum balance is £1"
-    end  
+    end
+    
+    it 'deducts fare on touch-out' do
+      subject.top_up(20)
+      expect { subject.touch_out }.to change{subject.balance}.by(-1)
+    end
 end
