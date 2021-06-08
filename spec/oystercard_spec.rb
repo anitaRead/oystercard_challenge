@@ -2,6 +2,8 @@ require 'oystercard'
 
 describe Oystercard do
     let(:entry_station) { double :entry_station }
+    let(:exit_station) { double :exit_station }
+
 
     it 'shows money on the card' do
         expect(subject.balance).to eq 0
@@ -18,13 +20,13 @@ describe Oystercard do
 
     it 'deducts money from the balance' do
       subject.top_up(50)
-      subject.touch_out
+      subject.touch_out(:exit_station)
       expect(subject.balance).to eq 49
     end
 
     it 'can touch in the oystercard' do
       subject.top_up(2)
-      expect(subject.touch_in(:entry_station)).to eq true
+      expect(subject.touch_in(:entry_station)).to eq :entry_station
     end
 
     it 'shows user is in journey' do
@@ -34,14 +36,14 @@ describe Oystercard do
     end
 
     it 'can touch out the oystercard' do
-      expect(subject.touch_out).to eq false
+      expect(subject.touch_out(:exit_station)).to eq(nil)
     end
 
     it 'keeps track of when the user is in journey' do
       subject.top_up(2)
       subject.touch_in(:entry_station)
       expect(subject.in_journey?).to eq true
-      subject.touch_out
+      subject.touch_out(:exit_station)
       expect(subject.in_journey?).to eq false
     end
 
@@ -51,7 +53,7 @@ describe Oystercard do
     
     it 'deducts fare on touch-out' do
       subject.top_up(20)
-      expect { subject.touch_out }.to change{subject.balance}.by(-1)
+      expect { subject.touch_out(:exit_station) }.to change{subject.balance}.by(-1)
     end
 
     it 'will save the entry station after touch-in' do
@@ -63,8 +65,33 @@ describe Oystercard do
     it 'will forget entry station upon touch-out' do
       subject.top_up(20)
       subject.touch_in(:entry_station)
-      subject.touch_out
+      subject.touch_out(:exit_station)
       expect(subject.entry_station).to eq nil
+    end
+
+    it 'will save the exit station after touch-out' do
+      subject.top_up(20)
+      subject.touch_in(:entry_station)
+      subject.touch_out("St pancras")
+      expect(subject.exit_station).to eq("St pancras")
+    end 
+
+    it 'will return the previous journey' do
+      subject.top_up(20)
+      subject.touch_in("Hendon")
+      subject.touch_out("Waterloo")
+      expect(subject.journey_list).to eq({"Hendon" => "Waterloo"})
+    end
+
+    it 'will return two previous journeys' do
+      subject.top_up(50)
+      subject.touch_in("Hendon")
+      subject.touch_out("Waterloo")
+      subject.touch_in("Oxford Circus")
+      subject.touch_out("Clapham")
+      expect(subject.journey_list).to eq({
+        "Hendon" => "Waterloo",
+        "Oxford Circus" => "Clapham"})
     end
 
 end
