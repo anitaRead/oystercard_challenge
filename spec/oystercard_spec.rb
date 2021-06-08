@@ -78,9 +78,9 @@ describe Oystercard do
 
     it 'will return the previous journey' do
       subject.top_up(20)
-      subject.touch_in("Hendon")
-      subject.touch_out("Waterloo")
-      expect(subject.journey_list).to eq({"Hendon" => "Waterloo"})
+      subject.touch_in(entry_station)
+      subject.touch_out(exit_station)
+      expect(subject.journey_list).to eq({entry_station => exit_station})
     end
 
     it 'will return two previous journeys' do
@@ -92,6 +92,10 @@ describe Oystercard do
       expect(subject.journey_list).to eq({
         "Hendon" => "Waterloo",
         "Oxford Circus" => "Clapham"})
+    end
+
+    it 'has a default empty journey list' do
+      expect(subject.journey_list).to be_empty
     end
 
 end
