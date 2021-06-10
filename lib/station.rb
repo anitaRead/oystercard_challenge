@@ -2,16 +2,16 @@ class Station
 
     attr_reader :zone, :name
 
-    def initialize(name)
+    def initialize(name, zone)
         @name = name
-        @zones = { 
-            4 => ["Hendon", "Mill Hill"]
-        }
-        @zone = get_zone
+        @zone = zone
+        # @zones = { 
+        #     4 => ["Hendon", "Mill Hill"]
+        # }
     end
 
-    def get_zone
-       @zones.each { |k, v| return k if v.include? @name }
-    end
+    # def get_zone
+    #    @zones.each { |k, v| return k if v.include? @name }
+    # end
 
 end
